@@ -30,6 +30,10 @@ class BezierCurve:
         return self.degree*sum(terms)
 
 class MinimiseAction:
+    '''
+    Class to handle the minimization of the action functional for a given Lagrangian.
+    The action is defined as the integral of the Lagrangian over the path defined by a Bezier curve.
+    '''
     def __init__(self, lagrangian, degree, initial_pos, final_pos):
         # Initialize the minimization parameters
         self.lagrangian = lagrangian
