@@ -98,21 +98,6 @@ class ActionMinimiser:
         plt.grid()
         plt.show()
 
-def plot_2d_parameter_space(action, n=20):
-    x = np.linspace(0, 1, n)
-    y = np.linspace(-.1, -5, n)
-    z = np.array([action(np.array([i,j])) for j in y for i in x])
-
-    X, Y = np.meshgrid(x, y)
-    Z = z.reshape(n, n)
-
-    plt.contourf(X, Y, Z)
-    plt.colorbar(label='Action')
-    plt.title('Parameter Space')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.show()
-
 if __name__ == "__main__":
     # Example Lagrangian
     # Lagrangian for the Brachistochrone problem
