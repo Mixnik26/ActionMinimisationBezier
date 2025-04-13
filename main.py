@@ -29,7 +29,7 @@ class BezierCurve:
         terms = [nCr(self.degree-1, i) * (1-t)**(self.degree-i-1) * t**i * (self.control_points[i+1]-self.control_points[i]) for i in range(self.degree)]
         return self.degree*sum(terms)
 
-class MinimiseAction:
+class ActionMinimiser:
     '''
     Class to handle the minimization of the action functional for a given Lagrangian.
     The action is defined as the integral of the Lagrangian over the path defined by a Bezier curve.
@@ -127,6 +127,6 @@ if __name__ == "__main__":
     degree = 4
     initial_guess = [[.5, -.5], [.5, -.5], [.5, -.5]]
 
-    Brachistochrone = MinimiseAction(Lagrangian, degree, initial_pos, final_pos)
+    Brachistochrone = ActionMinimiser(Lagrangian, degree, initial_pos, final_pos)
     Brachistochrone.minimise(initial_guess)
     Brachistochrone.plot_bezier_curve()
