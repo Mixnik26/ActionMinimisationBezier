@@ -3,61 +3,96 @@ import matplotlib.pyplot as plt
 from math import comb as nCr
 from scipy.integrate import quad
 from scipy.optimize import minimize
-from sympy import plot
 
 class BezierCurve:
-    def __init__(self, control_points):
+    '''
+    Class to represent a Bezier curve defined by control points.
+    '''
+    def __init__(self, control_points: np.ndarray[np.ndarray]):
+        # Validate control points and define degree
         self.control_points = np.array(control_points)
         self.degree = len(self.control_points) - 1
 
-    def curve(self, t):
+    def curve(self, t: float):
+        '''
+        Calculate the Bezier curve point at parameter t as a Bernstein polynomial.
+        '''
+        # Calculate the Bezier curve point at parameter t
         terms = [nCr(self.degree, i) * (1-t)**(self.degree-i) * t**i * self.control_points[i] for i in range(self.degree + 1)]
         return sum(terms)
     
-    def curve_deriv(self, t):
-        terms = [nCr(self.degree-1, i) * (1-t)**(self.degree-i-1) * t**i * (self.control_points[i+1] - self.control_points[i]) for i in range(self.degree)]
+    def curve_deriv(self, t: float):
+        '''
+        Calculate the derivative of the Bezier curve at parameter t.
+        '''
+        # Calculate the derivative of the Bezier curve at parameter t
+        terms = [nCr(self.degree-1, i) * (1-t)**(self.degree-i-1) * t**i * (self.control_points[i+1]-self.control_points[i]) for i in range(self.degree)]
         return self.degree*sum(terms)
 
-def Lagrangian(t, q, qdot):
-    x, y = q
-    xdot, ydot = qdot
-    return np.sqrt((xdot**2 + ydot**2)/(-2*y))
+class MinimiseAction:
+    def __init__(self, lagrangian, degree, initial_pos, final_pos):
+        # Initialize the minimization parameters
+        self.lagrangian = lagrangian
+        self.degree = degree
+        self.initial_pos = initial_pos
+        self.final_pos = final_pos
 
-def generate_func_to_minimise(qi, qf, degree):
+        # Define the action function to be minimized
+        def func_to_minimise(control_points: np.ndarray):
+            # Reshape control points to 2D array and introduce boundariy conditions
+            control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
+            control_points = np.vstack((initial_pos, control_points, final_pos))
 
-    def func_to_minimise(control_points):
-        control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
-        control_points = np.vstack((qi, control_points, qf))
-        bezier = BezierCurve(control_points)
-        action = quad(lambda t: Lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
-        return action
+            # Define the Bezier curve and compute the action
+            bezier = BezierCurve(control_points)
+            action = quad(lambda t: lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
 
-    return func_to_minimise
+            # Return the action to be minimized
+            return action
+        self.action = func_to_minimise
 
-def minimise_action(action, degree, initial_guess, **kwargs):
-    minimize_result = minimize(action, initial_guess, **kwargs)
-    if minimize_result.success:
-        print("Optimization successful!")
-        print("Action:", minimize_result.fun)
-        control_points = minimize_result.x.reshape(degree-1, len(minimize_result.x)//(degree-1))
-        control_points = np.vstack((qi, control_points, qf))
-        return control_points, minimize_result.fun
-    else:
-        print("Optimization failed.")
-
-def plot_bezier_curve(control_points, num_points=100):
-    bezier = BezierCurve(control_points)
-    t_vals = np.linspace(0, 1, num_points)
-    curve_points = np.array([bezier.curve(t) for t in t_vals])
+    def minimise(self, initial_guess, **kwargs):
+        '''
+        Function to handle the minimization of the action function.
+        Inputs:
+        - initial_guess: Initial guess for the control points (2D array)
+        - kwargs: Additional arguments for the minimization function
+        Outputs (if successful minimization):
+        - control_points: Optimized control points (2D array)
+        - action: Optimized action value (float)
+        '''
+        # Reshape the initial guess for scipy's minimize function
+        initial_guess = np.ndarray.flatten(np.array(initial_guess))
+        # Minimize the action using scipy's minimize function
+        minimize_result = minimize(self.action, initial_guess, **kwargs)
+        if minimize_result.success:
+            print("Minimisation successful!")
+            control_points = minimize_result.x.reshape(self.degree-1, len(minimize_result.x)//(self.degree-1))
+            control_points = np.vstack((self.initial_pos, control_points, self.final_pos))
+            self.control_points = control_points
+            self.min_action = minimize_result.fun
+            return control_points, minimize_result.fun
+        else:
+            print("Minimisation failed.")
     
-    plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve')
-    plt.scatter(control_points[:, 0], control_points[:, 1], color='red', label='Control Points')
-    plt.title('Bezier curve solution')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.legend()
-    plt.grid()
-    plt.show()
+    def plot_bezier_curve(self, num_points=100):
+        '''
+        Function to plot the Bezier curve defined by the optimized control points.
+        Inputs:
+        - num_points: Number of points to plot on the curve (int)
+        '''
+        bezier = BezierCurve(self.control_points)
+        t_vals = np.linspace(0, 1, num_points)
+        curve_points = np.array([bezier.curve(t) for t in t_vals])
+        
+        plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve')
+        plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red', label='Control Points')
+        plt.title('Bezier curve solution')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+        plt.grid()
+        plt.show()
 
 def plot_2d_parameter_space(action, n=20):
     x = np.linspace(0, 1, n)
@@ -75,11 +110,19 @@ def plot_2d_parameter_space(action, n=20):
     plt.show()
 
 if __name__ == "__main__":
-    qi = np.array([0, 0])
-    qf = np.array([3, -1])
+    # Example Lagrangian
+    # Lagrangian for the Brachistochrone problem
+    def Lagrangian(t, q, qdot):
+        x, y = q
+        xdot, ydot = qdot
+        return np.sqrt((xdot**2 + ydot**2)/(-2*y))
+
+    # Initial conditions
+    initial_pos = np.array([0, 0])
+    final_pos = np.array([3, -1])
     degree = 4
+    initial_guess = [[.5, -.5], [.5, -.5], [.5, -.5]]
 
-    action = generate_func_to_minimise(qi, qf, degree)
-
-    control_points, action = minimise_action(action, degree, np.array([.5, -.5, .5, -.5, .5, -.5]))
-    plot_bezier_curve(control_points)
+    Brachistochrone = MinimiseAction(Lagrangian, degree, initial_pos, final_pos)
+    Brachistochrone.minimise(initial_guess)
+    Brachistochrone.plot_bezier_curve()
