@@ -21,7 +21,7 @@ class BezierCurve:
 def Lagrangian(t, q, qdot):
     x, y = q
     xdot, ydot = qdot
-    return np.sqrt(xdot**2 + ydot**2) + y**2
+    return np.sqrt((xdot**2 + ydot**2)/(-2*y))
 
 def generate_func_to_minimise(qi, qf, degree):
 
@@ -41,20 +41,20 @@ def plot_bezier_curve(control_points, num_points=100):
     
     plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve')
     plt.scatter(control_points[:, 0], control_points[:, 1], color='red', label='Control Points')
-    plt.title('Bezier Curve')
+    plt.title('Bezier curve solution')
     plt.xlabel('x')
     plt.ylabel('y')
     plt.legend()
     plt.grid()
     plt.show()
 
-def plot_parameter_space(action):
-    x = np.linspace(-1, 1, 10)
-    y = np.linspace(-1, 1, 10)
+def plot_2d_parameter_space(action, n=20):
+    x = np.linspace(0, 1, n)
+    y = np.linspace(-.1, -5, n)
     z = np.array([action(np.array([i,j])) for j in y for i in x])
 
     X, Y = np.meshgrid(x, y)
-    Z = z.reshape(10, 10)
+    Z = z.reshape(n, n)
 
     plt.contourf(X, Y, Z)
     plt.colorbar(label='Action')
@@ -65,15 +65,16 @@ def plot_parameter_space(action):
 
 if __name__ == "__main__":
     qi = np.array([0, 0])
-    qf = np.array([1, -1])
+    qf = np.array([3, -1])
+    degree = 4
 
-    action = generate_func_to_minimise(qi, qf, degree=2)
-    minimize_result = minimize(action, np.random.rand(2))
+    action = generate_func_to_minimise(qi, qf, degree)
+    minimize_result = minimize(action, np.array([.5, -.5, .5, -.5, .5, -.5]), method='L-BFGS-B')
     
     if minimize_result.success:
         print("Optimization successful!")
         print("Action:", minimize_result.fun)
-        control_points = minimize_result.x.reshape(1, 2)
+        control_points = minimize_result.x.reshape(degree-1, len(minimize_result.x)//(degree-1))
         control_points = np.vstack((qi, control_points, qf))
         plot_bezier_curve(control_points)
     else:
