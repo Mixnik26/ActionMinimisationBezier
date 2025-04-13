@@ -34,6 +34,17 @@ def generate_func_to_minimise(qi, qf, degree):
 
     return func_to_minimise
 
+def minimise_action(action, degree, initial_guess, **kwargs):
+    minimize_result = minimize(action, initial_guess, **kwargs)
+    if minimize_result.success:
+        print("Optimization successful!")
+        print("Action:", minimize_result.fun)
+        control_points = minimize_result.x.reshape(degree-1, len(minimize_result.x)//(degree-1))
+        control_points = np.vstack((qi, control_points, qf))
+        return control_points, minimize_result.fun
+    else:
+        print("Optimization failed.")
+
 def plot_bezier_curve(control_points, num_points=100):
     bezier = BezierCurve(control_points)
     t_vals = np.linspace(0, 1, num_points)
@@ -69,14 +80,6 @@ if __name__ == "__main__":
     degree = 4
 
     action = generate_func_to_minimise(qi, qf, degree)
-    minimize_result = minimize(action, np.array([.5, -.5, .5, -.5, .5, -.5]), method='L-BFGS-B')
-    
-    if minimize_result.success:
-        print("Optimization successful!")
-        print("Action:", minimize_result.fun)
-        control_points = minimize_result.x.reshape(degree-1, len(minimize_result.x)//(degree-1))
-        control_points = np.vstack((qi, control_points, qf))
-        plot_bezier_curve(control_points)
-    else:
-        print("Optimization failed.")
-    
+
+    control_points, action = minimise_action(action, degree, np.array([.5, -.5, .5, -.5, .5, -.5]))
+    plot_bezier_curve(control_points)
