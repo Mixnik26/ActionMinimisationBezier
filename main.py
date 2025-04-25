@@ -53,7 +53,7 @@ class ActionMinimiser:
 
             # Return the action to be minimized
             return action
-        self.action = func_to_minimise
+        self.action_func = func_to_minimise
 
     def minimise(self, initial_guess, **kwargs):
         '''
@@ -65,16 +65,28 @@ class ActionMinimiser:
         - control_points: Optimized control points (2D array)
         - action: Optimized action value (float)
         '''
+        if self.degree == 1:
+            print("Bezier curve is of first degree and thus cannot be optimized.")
+            control_points = np.vstack((self.initial_pos, self.final_pos))
+            self.control_points = control_points
+            # Define the Bezier curve and compute the action
+            bezier = BezierCurve(control_points)
+            self.action = quad(lambda t: self.lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
+            self.S = self.action
+            return control_points, self.action
+
         # Reshape the initial guess for scipy's minimize function
         initial_guess = np.ndarray.flatten(np.array(initial_guess))
         # Minimize the action using scipy's minimize function
-        minimize_result = minimize(self.action, initial_guess, **kwargs)
+        minimize_result = minimize(self.action_func, initial_guess, **kwargs)
         if minimize_result.success:
             print("Minimisation successful!")
+            # Reshape control points for readability and store the result
             control_points = minimize_result.x.reshape(self.degree-1, len(minimize_result.x)//(self.degree-1))
             control_points = np.vstack((self.initial_pos, control_points, self.final_pos))
             self.control_points = control_points
-            self.min_action = minimize_result.fun
+            self.action = minimize_result.fun
+            self.S = self.action
             return control_points, minimize_result.fun
         else:
             print("Minimisation failed.")
@@ -90,10 +102,9 @@ class ActionMinimiser:
         curve_points = np.array([bezier.curve(t) for t in t_vals])
         
         plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve')
-        plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red', label='Control Points')
+        plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='black', label='Control Points')
         plt.title('Bezier curve solution')
         plt.xlabel('x')
         plt.ylabel('y')
         plt.legend()
         plt.grid()
-        plt.show()
