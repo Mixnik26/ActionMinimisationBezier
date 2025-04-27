@@ -43,7 +43,7 @@ and, writing $\mathbf{B}_{P_0P_1...P_k}$ as the Bézier curve determined by any 
 
 There is also a third polynomial form Bézier curve, but it is derived from the first definition so I will omit it. Using these definitions, in principle it is possible to find the dependence of $\Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert$ on $n$, however I have yet to do so.
 
-I am also aware that $\beta_{i,n}$ is a [Bernstein polynomial](https://en.wikipedia.org/wiki/Bernstein_polynomial) where it has been proven that: for a continuous function $f(x)$ on the interval $x\in[0,1]$, the Bernstein polynomial:
+I am also aware that $\beta_{i,n}$ are [Bernstein basis polynomials](https://en.wikipedia.org/wiki/Bernstein_polynomial) where it has been proven that: for a continuous function $f(x)$ on the interval $x\in[0,1]$, the [Bernstein polynomial](https://en.wikipedia.org/wiki/Bernstein_polynomial):
 
 ```math
 B_n(f)(x) = \sum_{i=0}^n f(i/n)\ \beta_{i,n}(x)
