@@ -89,7 +89,10 @@ class ActionMinimiser:
             self.S = self.action
             return control_points, minimize_result.fun
         else:
-            print("Minimisation failed.")
+            print("Minimisation failed: " + minimize_result.message)
+            self.control_points = None
+            self.action = None
+            self.S = self.action
     
     def plot_bezier_curve(self, num_points=100):
         '''
