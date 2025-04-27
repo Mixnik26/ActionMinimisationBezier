@@ -10,12 +10,12 @@ It is straightforward to show that if the Bezier curve $\mathbf{B}(t) = [b_{1}(t
 
 $$S(\textbf{B}) = \int L[t, \mathbf{B}, \dot{\mathbf{B}}] \text{d}t$$
 
-$$\quad = S(\textbf{F}) + \int \sum_{i} \left[ \delta_i \left( \frac{\partial L}{\partial f_i} - \frac{d}{dt} \left[ \frac{\partial L}{\partial \dot{f_i}} \right] \right) \right] \text{d}t + \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t + \int O(\Vert\boldsymbol{\eta_i}\Vert^3) \text{d}t$$
+$$\quad = S(\textbf{F}) + \int \sum_{i} \left[ \delta_i \left( \frac{\partial L}{\partial f_i} - \frac{d}{dt} \left[ \frac{\partial L}{\partial \dot{f_i}} \right] \right) \right] \text{d}t + \frac{1}{2} \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t + \int O(\Vert\boldsymbol{\eta_i}\Vert^3) \text{d}t$$
 
-$$\implies \delta S = S(\textbf{B}) - S(\textbf{F}) \approx \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t$$
+$$\implies \delta S = S(\textbf{B}) - S(\textbf{F}) \approx \frac{1}{2} \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t$$
 
 where the Hessian matrix is defined as $`(H_{f})_{ij} = \partial^2 L/\partial f_{i} \partial f_{j}`$ for entries $i\ j$, and $\boldsymbol{\eta_i} = [\delta_i, \dot{\delta_i}]^{T}$.
 
 Since $\mathbf{B}(t) \approx \mathbf{F}(t)$, it is not unreasonable to think that the Hessian matrix in $\mathbf{B}(t)$ is close to that in $\mathbf{F}(t)$. Also applying the triangle inequality for integrals approximately bounds the error in the action to:
 
-$$ \delta S < \int \sum_{i} \Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert \text{d}t$$
+$$ \delta S < \frac{1}{2} \int \sum_{i} \Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert \text{d}t$$
