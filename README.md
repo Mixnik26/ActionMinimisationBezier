@@ -44,7 +44,11 @@ and, writing $\mathbf{B}_{P_0P_1...P_k}$ as the Bézier curve determined by any 
 There is also a third polynomial form Bézier curve, but it is derived from the first definition so I will omit it. Using these definitions, in principle it is possible to find the dependence of $\Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert$ on $n$, however I have yet to do so.
 
 I am also aware that $\beta_{i,n}$ is a [Bernstein polynomial](https://en.wikipedia.org/wiki/Bernstein_polynomial) where it has been proven that: for a continuous function $f(x)$ on the interval $x\in[0,1]$, the Bernstein polynomial:
-$$B_n(f)(x) = \sum_{i=0}^n f(i/n)\ \beta_{i,n}(x)$$
+```math
+B_n(f)(x) = \sum_{i=0}^n f(i/n)\ \beta_{i,n}(x)
+```
 satisfies
-$$\lim_{n\to\infty}B_{n}(f)(x) \to f(x)$$
+```math
+\lim_{n\to\infty}B_{n}(f)(x) \to f(x)
+```
 uniformly on the interval $x \in [0,1]$. However, the term $f(i/n)$ indicates that the "control points" in this sum lie on $f(x)$, which is not necessarily the true for this use case. Although perhaps it is possible to prove that as $n \to \infty$, the control points $\mathbf{P}_i$ tend to lie on the true solution $\mathbf{F}(t)$ in which case this theorem could hold.
