@@ -26,7 +26,7 @@ As promised, $\delta S$ is roughly bounded by an integral second order in $\bold
 
 So far, we haven't defined $\mathbf{B}(t)$ to be a Bézier curve, so all the above holds for a general variation approach, but doing so now introduces dependence on the control points $\mathbf{P}_i$ and (more importantly) the degree $n$. There are multiple definitions of a Bézier curve as per [wikipedia](https://en.wikipedia.org/wiki/Bézier_curve):
 
-$$ \mathbf{B}(t) = \sum_{i=0}^{n} \beta_{i\ n}(t)\ \mathbf{P}_i, \quad 0\le t \le 1$$
+$$ \mathbf{B}(t) = \sum_{i=0}^{n} \beta_{i\ n}(t)\ \mathbf{P}_i\text{,} \quad 0\le t \le 1$$
 $$ \text{with}\quad \beta_{i\ n}(t) = \text{nCr}(n,i)\ (1-t)^{n-i}\ t^{i}$$
 
 and, writing $\mathbf{B}_{P_0P_1...P_k}$ as the Bézier curve determined by any selection of points $P_0,P_1,...P_k$:
