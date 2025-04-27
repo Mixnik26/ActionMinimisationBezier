@@ -26,12 +26,14 @@ As promised, $\delta S$ is roughly bounded by an integral second order in $\bold
 
 So far, we haven't defined $\mathbf{B}(t)$ to be a Bézier curve, so all the above holds for a general variation approach, but doing so now introduces dependence on the control points $\mathbf{P}_i$ and (more importantly) the degree $n$. There are multiple definitions of a Bézier curve as per [wikipedia](https://en.wikipedia.org/wiki/Bézier_curve):
 
-$$ \mathbf{B}(t) = \sum_{i=0}^{n} \beta_{i\ n}(t)\ \mathbf{P}$$
-$$ \text{with}\quad \beta_{i\ n}(t) = \text{nCr}(n,i)\ (1-t)^{n-i}\ t^{i}$$
+```math
+\mathbf{B}(t) = \sum_{i=0}^{n} \beta_{i\ n}(t)\ \mathbf{P}_i, \quad 0\le t \le 1 \\
+\text{with}\quad \beta_{i\ n}(t) = \text{nCr}(n,i)\ (1-t)^{n-i}\ t^{i}
+```
 
 and, writing $\mathbf{B}_{P_0P_1...P_k}$ as the Bézier curve determined by any selection of points $P_0,P_1,...P_k$:
 $$\mathbf{B}(t) =  \mathbf{B}_{P_0P_1...P_n}(t) = (1-t)\mathbf{B}_{P_0P_1...P_{n-1}}(t) + t\mathbf{B}_{P_1P_2...P_n}(t), \quad 0\le t \le 1$$
-$$ \text{with}\quad \mathbf{B}_{P_0}(t) = \mathbf{P}_0$$
+$$\text{with}\quad \mathbf{B}_{P_0}(t) = \mathbf{P}_0$$
 
 There is also a third polynomial form Bézier curve, but it is derived from the first definition so I will omit it. Using these definitions, in principle it is possible to find the dependence of $\Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert$ on $n$, however I have yet to do so.
 
