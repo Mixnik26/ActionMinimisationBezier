@@ -7,9 +7,11 @@ Action computation and minimisation is handled by scipy's `integrate.quad` and `
 # Error analysis
 
 It is straightforward to show that if the Bezier curve $\mathbf{B}(t) = [b_{1}(t), b_{2}(t), ...]^{T}$ deviates from the true solution $\mathbf{F}(t) = [f_{1}(t), f_{2}(t), ...]^{T}$ by some small deviation $\boldsymbol{\delta}(t) = [\delta_{1}(t), \delta_{2}(t), ...]^{T}$, then the error in the action $\delta S$ will be roughly second order in $\boldsymbol{\delta}(t)$. To be more specific, for a Lagrangian $\mathcal{L}[t, \mathbf{x}, \dot{\mathbf{x}}]$:
-$$ S(\textbf{B}) = \int \mathcal{L}[t, \mathbf{B}, \dot{\mathbf{B}}] \text{d}t \\
-\quad = S(\textbf{F}) + \int \sum_{i}\[ \delta_i \( \frac{\partial \mathcal{L}}{\partial f_i} - \frac{d}{dt}\[\frac{\partial \mathcal{L}}{\partial \dot{f_i}}\] \) \] \text{d}t + \int \boldsymbol{\delta}^{T} H_{f} \boldsymbol{\delta}  + O(||\boldsymbol{\delta}||^{3})\text{d}t$$
-$$\implies \delta S = S(\textbf{B}) - S(\textbf{F}) = \int \boldsymbol{\delta}^{T} H_{f} \boldsymbol{\delta}  + O(||\boldsymbol{\delta}||^{3})\text{d}t$$
+```math
+S(\textbf{B}) = \int \mathcal{L}[t, \mathbf{B}, \dot{\mathbf{B}}] \text{d}t \\
+\quad = S(\textbf{F}) + \int \sum_{i} \left[ \delta_i \left( \frac{\partial \mathcal{L}}{\partial f_i} - \frac{d}{dt} \left[ \frac{\partial \mathcal{L}}{\partial \dot{f_i}} \right] \right) \right] \text{d}t + \int \boldsymbol{\delta}^{T} H_{f} \boldsymbol{\delta}  + O(||\boldsymbol{\delta}||^{3})\text{d}t \\
+$$\implies \delta S = S(\textbf{B}) - S(\textbf{F}) = \int \boldsymbol{\delta}^{T} H_{f} \boldsymbol{\delta}  + O(||\boldsymbol{\delta}||^{3})\text{d}t
+```
 where the Hessian matrix is defined as: $(H_{f})_{ij} = \frac{\partial^2 \mathcal{L}}{\partial f_{i} \partial f_{j}}$ for entries $i,j$.
 
 Since $\mathbf{B}(t) \approx \mathbf{F}(t)$, it is not unreasonable to think that the Hessian matrix in $\mathbf{B}(t)$ is close to that in $\mathbf{F}(t)$. Also applying the triangle inequality for integrals approximately bounds the error in the action to:
