@@ -53,4 +53,4 @@ satisfies
 ```math
 \lim_{n\to\infty}B_{n}(f)(x) \to f(x)
 ```
-uniformly on the interval $x \in [0,1]$. However, the term $f(i/n)$ indicates that the "control points" in this sum lie on $f(x)$, which is not necessarily the true for this use case. Although perhaps it is possible to prove that as $n \to \infty$, the control points $\mathbf{P}_i$ tend to lie on the true solution $\mathbf{F}(t)$ in which case this theorem could hold.
+uniformly on the interval $x \in [0,1]$. However, the term $f(i/n)$ indicates that the "control points" in this sum lie on $f(x)$, which is not necessarily the true for this use case. Although perhaps it is possible to prove that, for some cases, as $n \to \infty$, the control points $\mathbf{P}_i$ tend to lie on the true solution $\mathbf{F}(t)$ in which case this theorem could hold.
