@@ -12,9 +12,9 @@ It is straightforward to show that if the Bézier curve $\mathbf{B}(t) = [b_{1}(
 
 ```math
 S(\mathbf{B}) = \int L[t, \mathbf{B}, \dot{\mathbf{B}}] \text{d}t
-\\\
+\\\\
 \quad = S(\mathbf{F}) + \int \sum_{i} \left[ \delta_i \left( \frac{\partial L}{\partial f_i} - \frac{d}{dt} \left[ \frac{\partial L}{\partial \dot{f_i}} \right] \right) \right] \text{d}t + \frac{1}{2} \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t + \int O(\Vert\boldsymbol{\eta_i}\Vert^3) \text{d}t
-\\\
+\\\\
 \implies \delta S = S(\mathbf{B}) - S(\mathbf{F}) \approx \frac{1}{2} \int \sum_{i} \boldsymbol{\eta_i}^{T} H_{f} \boldsymbol{\eta_i}\ \text{d}t
 ```
 
