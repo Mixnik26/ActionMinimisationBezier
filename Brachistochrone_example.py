@@ -65,8 +65,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
-    # Fit the final time errors to a line in log space
-    # This is done to see if the error scales with the degree of the Bezier curve
+    # Fit the final time errors to a line in log space to see if the error scales with the degree of the Bezier curve
     fit = curve_fit(lambda x, a, b: a*x + b, degrees, np.log(final_times_error))
     a, b = fit[0]
 
