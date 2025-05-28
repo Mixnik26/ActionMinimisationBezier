@@ -18,11 +18,11 @@ $$\implies \delta S = S(\mathbf{B}) - S(\mathbf{F}) \approx \frac{1}{2} \int \su
 
 where the Hessian matrix is defined as $`H_{f} = \begin{bmatrix} \partial^2 L/\partial f^2 & \partial^2 L/\partial f \partial \dot{f} \\\ \partial^2 L/\partial f \partial \dot{f} & \partial^2 L/\partial \dot{f}^2 \end{bmatrix}`$,<br> and $\boldsymbol{\eta_i} = [\delta_i, \dot{\delta_i}]^{T}$.
 
-Since $\mathbf{B}(t) \approx \mathbf{F}(t)$, it is not unreasonable to think that the Hessian matrix in $\mathbf{B}(t)$ might be close to that in $\mathbf{F}(t)$. Also applying the triangle inequality for integrals approximately bounds the error in the action to:
+Applying the triangle inequality for integrals approximately bounds the error in the action to:
 
-$$ \delta S < \frac{1}{2} \int \sum_{i} \Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{b}\Vert \text{d}t$$
+$$ \delta S < \frac{1}{2} \int \sum_{i} \Vert\boldsymbol{\eta_i}\Vert^2 \Vert H_{f}\Vert \text{d}t$$
 
-As promised, $\delta S$ is roughly bounded by an integral second order in $\boldsymbol{\delta}(t)$, however there is also second order dependence on $\dot{\boldsymbol{\delta}}(t)$. This $\dot{\boldsymbol{\delta}}(t)$ dependence can be interpreted in this case as as a measure of how the variability of $\mathbf{F}(t)$ affects convergence. If the true solution is very sharp at a point, or generally if $\Vert \dot{\mathbf{F}}(t)\Vert$ is large, then a variational method such as this one would likely struggle to replicate it. For example, a Bézier curve would need quite a few control points to describe something like a loop in the path.
+As promised, $\delta S$ is roughly bounded by an integral second order in $\boldsymbol{\delta}(t)$, however there is also second order dependence on $\dot{\boldsymbol{\delta}}(t)$. This $\dot{\boldsymbol{\delta}}(t)$ dependence can be interpreted in this case as as a measure of how the variability of $\mathbf{F}(t)$ affects convergence. If the true solution turns sharply at a point, or generally if $\Vert \dot{\mathbf{F}}(t)\Vert$ is large, then a variational method such as this one would likely struggle to replicate it. For example, a Bézier curve would need quite a few control points to describe something like a loop in the path.
 
 So far, we haven't defined $\mathbf{B}(t)$ to be a Bézier curve, so all the above holds for a general variation approach, but doing so now introduces dependence on the control points $\mathbf{P}_i$ and (more importantly) the degree $n$. There are multiple definitions of a Bézier curve as per [wikipedia](https://en.wikipedia.org/wiki/Bézier_curve):
 
