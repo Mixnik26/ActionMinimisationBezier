@@ -79,6 +79,7 @@ class ActionMinimiser:
         initial_guess = np.ndarray.flatten(np.array(initial_guess))
         # Minimize the action using scipy's minimize function
         minimize_result = minimize(self.action_func, initial_guess, **kwargs)
+
         if minimize_result.success:
             print("Minimisation successful!")
             # Reshape control points for readability and store the result
@@ -89,6 +90,7 @@ class ActionMinimiser:
             self.S = self.action
             return control_points, minimize_result.fun
         else:
+            # Otherwise return a failure
             print("Minimisation failed: " + minimize_result.message)
             self.control_points = None
             self.action = None
@@ -104,7 +106,7 @@ class ActionMinimiser:
         t_vals = np.linspace(0, 1, num_points)
         curve_points = np.array([bezier.curve(t) for t in t_vals])
         
-        plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve')
+        plt.plot(curve_points[:, 0], curve_points[:, 1], label='Bezier Curve', color="red")
         plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='black', label='Control Points')
         plt.title('Bezier curve solution')
         plt.xlabel('x')
