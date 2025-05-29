@@ -4,15 +4,16 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit, fsolve
 
 # Lagrangian for the Brachistochrone problem using g=1
-def Lagrangian(t, q, qdot):
+def lagrangian(t, q, qdot):
     x, y = q
     xdot, ydot = qdot
     return np.sqrt((xdot**2 + ydot**2)/(-2*y))
 
-# Analytic solution for some parameters of the Brachistochrone problem assuming the particle starts at the origin
 def analytic_parameters(final_pos):
     '''
-    Analytic solution for the Brachistochrone problem from the "Indirect method" section on wikipedia: https://en.wikipedia.org/wiki/Brachistochrone_curve
+    Parameters for the analytic solution of the Brachistochrone problem from the "Indirect method" section on wikipedia: https://en.wikipedia.org/wiki/Brachistochrone_curve
+    Inputs:
+        - final_pos: the final position
     '''
     # The final position is given by the coordinates of the final point
     x_f = final_pos[0]
@@ -40,7 +41,7 @@ def analytic_solution(phi, r):
 
 
 if __name__ == "__main__":
-    # Initial conditions
+    # Boundary conditions
     initial_pos = np.array([0, 0])
     final_pos = np.array([3, -1])
 
@@ -52,16 +53,18 @@ if __name__ == "__main__":
     final_times_error = []
     for d in degrees:
         initial_guess = [[.5, -.5] for _ in range(d-1)]
+
         # Create an instance of ActionMinimiser and minimize the action for the Brachistochrone problem
-        Brachistochrone = ActionMinimiser(Lagrangian, d, initial_pos, final_pos)
+        Brachistochrone = ActionMinimiser(lagrangian, d, initial_pos, final_pos)
         Brachistochrone.minimise(initial_guess)
+
         # Append the deviation of final time to the analytical solution to the list of final time errors
         final_times_error.append(Brachistochrone.S - t_f)
 
     # Plot the final degree bezier curve and the analytic solution
     Brachistochrone.plot_bezier_curve()
     phi = np.linspace(0, phi_f, 100)
-    plt.plot(analytic_solution(phi, r)[0], analytic_solution(phi, r)[1], ls="--", color="red", label='Analytic solution')
+    plt.plot(analytic_solution(phi, r)[0], analytic_solution(phi, r)[1], ls="--", color="black", label='Analytic solution')
     plt.legend()
     plt.show()
 
