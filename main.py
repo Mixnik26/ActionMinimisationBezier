@@ -34,7 +34,7 @@ class ActionMinimiser:
     Class to handle the minimization of the action functional for a given Lagrangian.
     The action is defined as the integral of the Lagrangian over the path defined by a Bezier curve.
     '''
-    def __init__(self, lagrangian, degree, initial_pos, final_pos):
+    def __init__(self, lagrangian, degree, initial_pos, final_pos, delta_t=None):
         # Initialize the minimization parameters
         self.lagrangian = lagrangian
         self.degree = degree
@@ -42,18 +42,41 @@ class ActionMinimiser:
         self.final_pos = final_pos
 
         # Define the action function to be minimized
-        def func_to_minimise(control_points: np.ndarray):
-            # Reshape control points to 2D array and introduce boundariy conditions
-            control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
-            control_points = np.vstack((initial_pos, control_points, final_pos))
+        # If delta_t is not provided, assume the lagrangian is the special case where delta_t is not required
+        if delta_t is None:
+            def _func_to_minimise(control_points: np.ndarray):
+                '''
+                From a 1D array of control points (for scipy's minimise), compute the action along the Bezier curve described by said control points using the formula:
+                S = ∫ L[s, B(s), dB(s)/ds] ds
+                '''
+                # Reshape control points to 2D array and introduce boundary conditions
+                control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
+                control_points = np.vstack((initial_pos, control_points, final_pos))
 
-            # Define the Bezier curve and compute the action
-            bezier = BezierCurve(control_points)
-            action = quad(lambda t: lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
+                # Define the Bezier curve and compute the action
+                bezier = BezierCurve(control_points)
+                action = quad(lambda t: lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
 
-            # Return the action to be minimized
-            return action
-        self.action_func = func_to_minimise
+                # Return the action to be minimized
+                return action
+                
+        else: # Otherwise, use delta_t to define the action
+            def _func_to_minimise(control_points: np.ndarray):
+                '''
+                From a 1D array of control points (for scipy's minimise), compute the action along the Bezier curve described by said control points using delta_t as per the formula:
+                S = ∫ delta_t * L[s, B(s), (1/delta_t) * dB(s)/ds] ds
+                '''
+                # Reshape control points to 2D array and introduce boundary conditions
+                control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
+                control_points = np.vstack((initial_pos, control_points, final_pos))
+
+                # Define the Bezier curve and compute the action
+                bezier = BezierCurve(control_points)
+                action = quad(lambda t: delta_t*lagrangian(t, bezier.curve(t), (1/delta_t)*bezier.curve_deriv(t)), 0, 1)[0]
+
+                # Return the action to be minimized
+                return action
+        self._action_func = _func_to_minimise
 
     def minimise(self, initial_guess, **kwargs):
         '''
@@ -69,7 +92,7 @@ class ActionMinimiser:
             print("Bezier curve is of first degree and thus cannot be optimized.")
             control_points = np.vstack((self.initial_pos, self.final_pos))
             self.control_points = control_points
-            # Define the Bezier curve and compute the action
+            # Define the Bezier curve and compute the action along it
             bezier = BezierCurve(control_points)
             self.action = quad(lambda t: self.lagrangian(t, bezier.curve(t), bezier.curve_deriv(t)), 0, 1)[0]
             self.S = self.action
@@ -78,7 +101,7 @@ class ActionMinimiser:
         # Reshape the initial guess for scipy's minimize function
         initial_guess = np.ndarray.flatten(np.array(initial_guess))
         # Minimize the action using scipy's minimize function
-        minimize_result = minimize(self.action_func, initial_guess, **kwargs)
+        minimize_result = minimize(self._action_func, initial_guess, **kwargs)
 
         if minimize_result.success:
             print("Minimisation successful!")
