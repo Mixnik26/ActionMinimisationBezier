@@ -8,6 +8,31 @@ There is a bit of a grey area as to what is considered a *better* approximation.
 
 Action computation and minimisation is handled by scipy's `integrate.quad` and `optimize.minimize`. I find that sometimes `optimize.minimize` struggles to reach a suitable tolerance for larger Bézier degree (roughly $n\sim 5$ for the Brachistochrone example), and `integrate.quad` struggles to reach a suitable tolerance for some boundary conditions. In some Lagrangians, it's also possible that `optimize.minimize` gets stuck in a local minima instead of the global minima, which can be avoided with good choice of initial guess. In spite of this, I seem to be getting roughly 4th order convergence (sometimes even 5th order convergence) in the error of the action, however this is purely empirical and I have yet to prove it generally. I eventually want to implement this into a general Euler-Lagrange solver that can also handle IVP physics problems, which is why I choose the Lagrangian as an argument instead of the action.
 
+# Numerically evaluating the action along a Bézier curve
+The action is given by (parametrised in t):
+
+$$S = \int_{t_i}^{t_f} L\left[t, \mathbf{B}, \frac{d\mathbf{B}}{dt}\right]\ \text{d}t$$
+
+To evaluate this numerically, we want to ideally have an integral over the Bézier curve's parameter, say $\lambda \in [0,1]$; so we assert the change of variables $t \rightarrow \lambda$.<br>
+In general, we would have:
+
+$$S = \int_{0}^{1} \frac{dt}{d\lambda}\ L\left[\lambda, \mathbf{B}(\lambda), \frac{d\lambda}{dt}\ \frac{d\mathbf{B}(\lambda)}{d\lambda} \right]\ \text{d}\lambda$$
+
+This defines a special set of problems where the lagrangian is such that the $dt/d\lambda$ cancels with the $d\lambda/dt$, so that the action integral in $\lambda$ is independent of the mapping between $t$ and $\lambda$:
+
+$$S = \int_{t_i}^{t_f} L\left[t, \mathbf{B}, \frac{d\mathbf{B}}{dt}\right]\ \text{d}t = \int_{0}^{1} L\left[\lambda, \mathbf{B}(\lambda), \frac{d\mathbf{B}(\lambda)}{d\lambda} \right]\ \text{d}\lambda$$
+
+This is perfect for problems like the Brachistochrone problem and optics problems where $L \sim \sqrt{\dot{x}^2 + \dot{y}^2 + ...}$ , in which cases $t_i$ or $t_f$ are not necessarily known.<br>
+Back to the general case, we can still choose how to transform $t \rightarrow \lambda$, the simplest case being a linear transformation:
+
+$$t = t_{i} + (t_{f} - t_{i})\lambda =: t_{i} + \Delta t\ \lambda$$
+
+In which case:
+
+$$S = \int_{0}^{1} \Delta t\ L\left[\lambda, \mathbf{B}(\lambda), \frac{1}{\Delta t}\ \frac{d\mathbf{B}(\lambda)}{d\lambda} \right]\ \text{d}\lambda$$
+
+This equation inherently assumes knowledge of $t_{i}$ and $t_{f}$, which is not necessarily known in some problems, especially in those where the goal is to determine $\Delta t$.
+
 # Error analysis
 
 The aim of this error analysis is to find the dependence of the error of the action $\delta S$ on the degree of the Bézier curve $n$.
