@@ -34,20 +34,21 @@ class ActionMinimiser:
     Class to handle the minimization of the action functional for a given Lagrangian.
     The action is defined as the integral of the Lagrangian over the path defined by a Bezier curve.
     '''
-    def __init__(self, lagrangian, degree, initial_pos, final_pos, delta_t=None):
+    def __init__(self, lagrangian, degree, initial_pos, final_pos, t_bounds = None):
         # Initialize the minimization parameters
         self.lagrangian = lagrangian
         self.degree = degree
         self.initial_pos = initial_pos
         self.final_pos = final_pos
 
+
         # Define the action function to be minimized
-        # If delta_t is not provided, assume the lagrangian is the special case where delta_t is not required
-        if delta_t is None:
+        # If t_bounds is not provided, assume the lagrangian is the special case where t_i and t_f are not required
+        if t_bounds is None:
             def _func_to_minimise(control_points: np.ndarray):
                 '''
                 From a 1D array of control points (for scipy's minimise), compute the action along the Bezier curve described by said control points using the formula:
-                S = ∫ L[s, B(s), dB(s)/ds] ds
+                S = ∫ L[B(s), dB(s)/ds] ds
                 '''
                 # Reshape control points to 2D array and introduce boundary conditions
                 control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
@@ -60,11 +61,12 @@ class ActionMinimiser:
                 # Return the action to be minimized
                 return action
                 
-        else: # Otherwise, use delta_t to define the action
+        else: # Otherwise, use t_bounds to define the action
+            delta_t = t_bounds[1] - t_bounds[0]
             def _func_to_minimise(control_points: np.ndarray):
                 '''
                 From a 1D array of control points (for scipy's minimise), compute the action along the Bezier curve described by said control points using delta_t as per the formula:
-                S = ∫ delta_t * L[s, B(s), (1/delta_t) * dB(s)/ds] ds
+                S = ∫ delta_t * L[t_i + delta_t*s, B(s), (1/delta_t) * dB(s)/ds] ds
                 '''
                 # Reshape control points to 2D array and introduce boundary conditions
                 control_points = control_points.reshape(degree-1, len(control_points)//(degree-1))
@@ -72,7 +74,7 @@ class ActionMinimiser:
 
                 # Define the Bezier curve and compute the action
                 bezier = BezierCurve(control_points)
-                action = quad(lambda t: delta_t*lagrangian(t, bezier.curve(t), (1/delta_t)*bezier.curve_deriv(t)), 0, 1)[0]
+                action = quad(lambda t: delta_t*lagrangian(t[0] + delta_t*t, bezier.curve(t), (1/delta_t)*bezier.curve_deriv(t)), 0, 1)[0]
 
                 # Return the action to be minimized
                 return action
